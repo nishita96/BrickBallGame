@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="button" onclick="start()" value="START">
+    <canvas id="myCanvas" width="460" height="620" style="border: solid 10px">Not supported!</canvas>
+
+<script>
+    var canvas = document.getElementById("myCanvas");
+    var context = null;
+    context=canvas.getContext('2d');
+
+    //BACKGROUND
+    function background() {
+        var bg1= context.createLinearGradient(0,0,460,620);
+        bg1.addColorStop(0,'#ACFA58');
+        bg1.addColorStop(1,'#58D3F7');
+        context.fillStyle = bg1;
+        context.fillRect(0,0,460,620);
+    }
+
+    //SOUNDS
+    //var bounce = new Audio("bounce.mp3");
+
+    //PADDLE
+    var px = (460-120)/2;
+    var py = 600;
+    var pw = 120;
+    var ph = 10;
+    var pdx = 2;
+
+    var rightPress = false;
+    var leftPress = false;
+
+    document.addEventListener("keydown", keyDown, false);
+    document.addEventListener("keyup", keyUp, false);
+
+    function keyDown(k) {
+        if(k.keyCode == 39) {
+            rightPress = true;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = true;
+        }
+    }
+    function keyUp(k) {
+        if(k.keyCode == 39) {
+            rightPress = false;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = false;
+        }
+    }
+    function paddleMove() {
+        if(rightPress && px < canvas.width-pw) {
+            px = px + 10;
+        }
+        else if(leftPress && px > 0) {
+            px = px - 10;
+        }
+
+    }
+    function paddleDraw() {
+        var c = context.createLinearGradient(10,600,440,10);
+        c.addColorStop(0, '#000000');
+        c.addColorStop(1, '#ffffff');
+
+        context.fillStyle = c;
+        context.fillRect(px,py,pw,ph);
+        context.strokeStyle = 'black';
+        context.lineWidth=1;
+        context.lineJoin = 'round';
+        context.strokeRect(px,py,pw,ph);
+
+    }
+
+    //BALL
+    var bx = 300;
+    var by = 100;
+    var bdx = 1;
+    var bdy = 2;
+    var brad = 11;
+
+    function ballDraw() {
+        if (by + brad + bdy >= 620) { debugger      //checks if the ball goes out from lower side
+            window.clearInterval(1);
+            alert("GAME OVER!");
+            document.location.reload();
+        }
+        else {
+            var g1 = context.createRadialGradient(bx,by,0,bx,by,brad);
+            g1.addColorStop(0,'#FE2E2E');
+            g1.addColorStop(1,'#B40404');
+            context.fillStyle=g1;
+
+            context.lineWidth=1;
+            context.strokeStyle='#8A0808';
+
+            context.beginPath();
+            context.arc(bx,by,brad,0,Math.PI*2,true);
+            context.fill();
+            context.stroke();
+        }
+    }
+    function ballMove() {
+        //context.clearRect(0,0,canvas.width,canvas.height);        //now not needed as background etc made again
+        if (by + bdy < 0+brad) {        //checks top side
+            bdy = -bdy;
+        }
+        else if(by + brad + bdy > py && bx > px && bx < px+ pw){        //checks if paddle present
+            bdy = -bdy;
+        }
+
+        else if (bx + bdx < 0+brad || bx + bdx > 460-brad) {            //check left and right wall
+            bdx = -bdx;
+        }
+        bx += bdx;
+        by += bdy;
+    }
+
+
+
+    // THE BRICKS
+    var j=0;
+    var h1 = 20;
+    var w1 = 80;
+    var l = 1;
+    var y1 = 20;
+    var brX = new Array();
+    var brY = new Array();
+    var brF = new Array();
+    for(var i=0;i<30;i++){
+        brX[i] = 0;
+        brY[i] = 0;
+        brF[i] = false;
+    }
+    function brickVal(num,x1,y1) {      //take brick corner coordinates
+        for(var i=0 ; i < num ; i++) {
+            //context.fillStyle = '#2E2EFE';
+            //context.fillRect(x1,y1,w1,h1);
+            x1=x1+90;
+
+            brX[j]=x1;
+            brY[j]=y1;
+            brF[j]=true;
+            j++;
+        }
+    }
+    function brickValLoop() {
+        y1=20;
+        j=0;
+        for(var i=0 ; i<6 ; i++){
+            if(l%2 == 1){      //check which line of bricks
+                var a= brickVal(4,50,y1);
+            }
+            else{
+                var a= brickVal(3,95,y1);
+            }
+            y1=y1+30;
+            l++;
+        }
+    }
+    brickValLoop();
+    //brF[9]=false;
+    function brick1(num,x1,y1) {        //make the actual working bricks
+
+            for(var i=0 ; i < num ; i++) {
+                if(brF[j]) {
+                    context.fillStyle = '#2E2EFE';
+                    context.fillRect(x1,y1,w1,h1);
+                }
+                else {
+
+                }
+                x1=x1+90;
+                j++;
+            }
+    }
+    function brickLoop() {
+        y1=20;
+        j=0;
+        for(var i=0 ; i<6 ; i++){
+            if(l%2 == 1){      //check which line of bricks
+                var a= brick1(4,50,y1);
+            }
+            else{
+                var a= brick1(3,95,y1);
+            }
+            y1=y1+30;
+            l++;
+        }
+    }
+
+    background();
+    //CALL ALL
+    function start() {
+        var isd=setInterval( function () {      //isd used to find n see if the interval id changes or not, if it does, what to do
+                                                //here it stays on on each call
+            context.clearRect(0,0,canvas.width,canvas.height);
+            paddleMove();
+            ballMove();
+            background();
+            brickLoop();
+            //setInterval(ballDraw(),2);
+            ballDraw();
+            paddleDraw();
+        } ,10);
+    }
+
+
+</script>
+
+</body>
+</html>

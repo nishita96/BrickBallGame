@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MOVING PADDLE</title>
+</head>
+<body>
+
+<canvas id="myCanvas" width="460" height="620" style="border: solid 10px">Not supported!</canvas>
+
+<script>
+    var canvas = document.getElementById("myCanvas");
+    var context = null;
+    context=canvas.getContext('2d');
+
+    var px = (460-120)/2;
+    var py = 600;
+    var pw = 120;
+    var ph = 10;
+    var pdx = 2;
+
+    var rightPress = false;
+    var leftPress = false;
+
+    document.addEventListener("keydown", keyDown, false);
+    document.addEventListener("keyup", keyUp, false);
+
+    function keyDown(k) {
+        if(k.keyCode == 39) {
+            rightPress = true;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = true;
+        }
+    }
+    function keyUp(k) {
+        if(k.keyCode == 39) {
+            rightPress = false;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = false;
+        }
+    }
+    function paddleMove() {
+        if(rightPress && px < canvas.width-pw) {
+            px = px + 10;
+        }
+        else if(leftPress && px > 0) {
+            px = px - 10;
+        }
+
+    }
+
+    function paddleDraw() {
+        var c = context.createLinearGradient(10,600,440,10);
+        c.addColorStop(0, '#000000');
+        c.addColorStop(1, '#ffffff');
+
+        context.fillStyle = c;
+        context.fillRect(px,py,pw,ph);
+        context.strokeStyle = 'black';
+        context.lineWidth=1;
+        context.lineJoin = 'round';
+        context.strokeRect(px,py,pw,ph);
+
+    }
+
+    setInterval( function () {
+        context.clearRect(0,0,canvas.width,canvas.height);
+        paddleMove();
+        paddleDraw();
+    } ,20);
+
+</script>
+
+</body>
+</html>

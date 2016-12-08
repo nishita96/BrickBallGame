@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MOVING BALL</title>
+</head>
+<body>
+<canvas id="myCanvas" width="460" height="620" style="border: solid 10px">Not supported!</canvas>
+
+<script>
+    var canvas = document.getElementById("myCanvas");
+    var context = null;
+    context=canvas.getContext('2d');
+
+    var bx = 300;
+    var by = 100;
+    var bdx = 1;
+    var bdy = 2;
+    var brad = 11;
+
+    function ballDraw() {
+        var g1 = context.createRadialGradient(bx,by,0,bx,by,brad);
+        g1.addColorStop(0,'#FE2E2E');
+        g1.addColorStop(1,'#B40404');
+        context.fillStyle=g1;
+
+        context.lineWidth=1;
+        context.strokeStyle='#8A0808';
+
+        context.beginPath();
+        context.arc(bx,by,brad,0,Math.PI*2,true);
+        context.fill();
+        context.stroke();
+    }
+
+    function ballMove() {
+        //context.clearRect(0,0,canvas.width,canvas.height);        //not needed as background being made again
+        var k=0;
+        ballDraw();
+        if (by + bdy < 0+brad || by + bdy > 620-brad) {
+            bdy = -bdy;
+        }
+        if (bx + bdx < 0+brad || bx + bdx > 460-brad) {
+            bdx = -bdx;
+        }
+        bx += bdx;
+        by += bdy;
+    }
+
+    setInterval(ballMove,15);
+
+    //gradient for paddle
+    var c = context.createLinearGradient(10,600,440,10);
+    c.addColorStop(0, '#000000');
+    c.addColorStop(1, '#777777');
+    //c.addColorStop(2, '#000000');
+    context.fillStyle = c;
+    context.fillRect(10,600,440,10);
+
+
+</script>
+</body>
+</html>

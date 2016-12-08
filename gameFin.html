@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #startBtn{
+            background-color: #000000;
+            color: #ffffff;
+            border-radius: 3px;
+            height: 50px;
+            width: 200px;
+            font-size: 20px;
+            margin-left: 130px;
+        }
+    </style>
+</head>
+<body>
+<input id="startBtn" type="button" onclick="start()" value="START">
+<br>
+<canvas id="myCanvas" width="460" height="620" style="border: solid 10px">Not supported!</canvas>
+<audio id="sound1" src="start.wav" style="display: none;"></audio>
+<script>
+
+    var canvas = document.getElementById("myCanvas");
+    var context = null;
+    context=canvas.getContext('2d');
+
+    var score = 0;
+    //BACKGROUND
+    function background() {
+        var bg1= context.createLinearGradient(0,0,460,620);
+        bg1.addColorStop(0,'#ACFA58');
+        bg1.addColorStop(1,'#58D3F7');
+        context.fillStyle = bg1;
+        context.fillRect(0,0,460,620);
+    }
+
+    //PADDLE (USING KEYBOARD)
+    var px = (460-120)/2;
+    var py = 600;
+    var pw = 120;
+    //var ph = 10;
+
+    var rightPress = false;
+    var leftPress = false;
+    document.addEventListener("keydown", keyDown, false);
+    document.addEventListener("keyup", keyUp, false);
+    function keyDown(k) {
+        if(k.keyCode == 39) {
+            rightPress = true;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = true;
+        }
+    }
+    function keyUp(k) {
+        if(k.keyCode == 39) {
+            rightPress = false;
+        }
+        else if(k.keyCode == 37) {
+            leftPress = false;
+        }
+    }
+    function paddleMove() {
+        if(rightPress && px < canvas.width-pw) {
+            px = px + 5;
+        }
+        else if(leftPress && px > 0) {
+            px = px - 5;
+        }
+
+    }
+    function paddleDraw() {
+        var c = context.createLinearGradient(10,600,440,10);
+        c.addColorStop(0, '#000000');
+        c.addColorStop(1, '#ffffff');
+
+        context.fillStyle = c;
+        context.fillRect(px,py,120,10);         //paddle width and height not taken as used only twice and only in this function
+        context.strokeStyle = 'black';
+        context.lineWidth=1;
+        context.lineJoin = 'round';
+        context.strokeRect(px,py,120,10);
+
+    }
+
+    //BALL & AUDIO OF BOUNCING
+    var bx = 400;
+    var by = 300;
+    var bdx = 1;
+    var bdy = 2;
+    var brad = 11;
+    var count = (5 * 4) * 2;
+
+    var sound;
+    sound = document.getElementById("sound1");
+    var soundStart = "start.wav";
+    var soundBounce = "bounce.mp3";
+    var soundBreak = "breaking.mp3";
+    var soundEnd = "endgame.wav";
+    var soundWin = "win.wav";
+
+
+    //includes game end
+    function ballDraw() {
+        if (by + brad + bdy >= 620) {      //checks if the ball goes out from lower side
+            sound.src = soundEnd;
+            sound.play();
+            for(var i=0; i<3 ; i++){
+                window.clearInterval(i);
+            }
+            setTimeout(
+                function () {
+                    gameEnd();
+                }, 1000
+            )
+        }
+        else {
+            var g1 = context.createRadialGradient(bx,by,0,bx,by,brad);
+            g1.addColorStop(0,'#FE2E2E');
+            g1.addColorStop(1,'#B40404');
+            context.fillStyle=g1;
+
+            context.lineWidth=1;
+            context.strokeStyle='#8A0808';
+
+            context.beginPath();
+            context.arc(bx,by,brad,0,Math.PI*2,true);
+            context.fill();
+            context.stroke();
+        }
+    }
+    //checks if BALL TOUCHES BRICK too
+    function ballMove() {
+        //context.clearRect(0,0,canvas.width,canvas.height);        //now not needed as background etc made again
+        //check the sign of the dx and dy of the ball and change direction of the ball accordingly at *
+
+
+        if (by + bdy < 0 + brad) {        //checks top side
+            bdy = -bdy;
+        }
+        else if (by + brad + bdy > py && bx > px && bx < px + (pw/2)) {        //checks if paddle present on the lower side (LEFT HALF)
+            bdy = -bdy;
+            if(bdx > 0){        //*
+                bdx = -bdx;
+            }
+            sound.src = soundBounce;
+            sound.play();
+        }
+        else if (by + brad + bdy > py && bx > px + (pw/2) && bx < px + pw) {        //checks if paddle present on the lower side (RIGHT HALF)
+            bdy = -bdy;
+            if(bdx < 0){        //*
+                bdx = -bdx;
+            }
+            sound.src = soundBounce;
+            sound.play();
+        }
+        if (bx + bdx < 0 + brad || bx + bdx > 460 - brad) {         //check left and right walls
+            bdx = -bdx;
+        }
+
+        //CHECK IF BRICK IS TOUCHED, IF YES THEN MAKE IS DISAPPEAR
+        else {
+            x1 = 50;
+            y1 = 30;
+            for(var i=0 ; i<4 ; i++){
+                for(var j=0 ; j<5 ; j++) {
+                    if(brF[j][i] > 0){          //check if brick is visible
+                        if (bx + brad + bdx > x1 + ((w1 + 10) * i) &&
+                            bx - brad + bdx < x1 + ((w1 + 10) * i) + w1 &&
+                            by + brad + bdy > y1 + ((h1 + 10) * j) &&
+                            by - brad + bdy < y1 + ((h1 + 10) * j) +h1){
+
+                            bdy = -bdy;
+                            //brF[j][i]=false;        //so that it doesn't print that brick (used to check only presence, single colour)
+                            if(brF[j][i] == 1){         //breaking black brick
+                                score = score + 5;
+                            }
+                            else if(brF[j][i] == 2){        ////breaking blue brick
+                                score = score + 1;
+                            }
+                            brF[j][i]=brF[j][i]-1;
+                            count = count - 1;
+                            sound.src = soundBreak;
+                            sound.play();
+
+                        }
+                    }
+                }
+            }
+        }
+
+        //GAME WON!!
+        if (count == 0){
+            sound.src = soundWin;
+            sound.play();
+            for(var i=0; i<3 ; i++){
+                window.clearInterval(i);
+            }
+            setTimeout(
+                function () {
+                    gameWin();
+                }, 2000
+            )
+        }
+        bx += bdx;
+        by += bdy;
+    }
+
+    // THE BRICKS
+    var h1 = 20;
+    var w1 = 80;
+    var y1 = 30;
+    var x1 = 50;
+    var brF = [];
+    for(var i=0;i<5;i++){
+        brF[i]=[];
+        for(var j=0;j<4;j++){
+            brF[i][j]=2;
+        }
+    }
+    //brF[3][1]=false;
+    function brickLoop() {
+        x1 = 50;
+        y1 = 30;
+        j = 0;
+        for(var i=0 ; i<5 ; i++){
+            x1 = 50;
+            for(var j=0 ; j<4 ; j++) {
+                if(brF[i][j] == 2) {
+                    context.fillStyle = '#2E2EFE';
+                    context.fillRect(x1,y1,w1,h1);
+                }
+                else if(brF[i][j] == 1)
+                {
+                    context.fillStyle = '#000000';
+                    context.fillRect(x1,y1,w1,h1);
+                }
+                x1=x1+w1+10;
+            }
+            y1=y1+h1+10;
+        }
+    }
+
+    function gameEnd() {
+        alert("GAME OVER!");
+        document.location.reload();
+    }
+    function gameWin() {
+        alert("YOU WIN!");
+        document.location.reload();
+    }
+
+    //SCORE BOARD
+    function scores() {
+        //Score
+        context.fillStyle='#ffffff';
+        context.font = '30px Arial';
+        context.fillText('SCORE: '+ score, 5,25);
+    }
+    background();
+
+    //CALL ALL
+    function start() {
+
+        sound.src = soundStart;
+        sound.play();
+        var isd=setInterval( function () {      //isd used to find n see if the interval id changes or not, if it does, what to do
+            //here it stays 1 on each call
+            context.clearRect(0,0,canvas.width,canvas.height);
+            paddleMove();
+            ballMove();
+            background();
+            brickLoop();
+            ballDraw();
+            paddleDraw();
+            scores();
+        } ,7);
+        document.getElementById("startBtn").style.display = 'none';
+    }
+
+
+</script>
+</body>
+</html>
