@@ -32,7 +32,7 @@ Preset:
 * `output.library` - name of exported library (e.g. `MyAwesomeProject()`)
 * `output.libraryTarget` - exporting library to global scope. In this case, preset to [`umd`](https://github.com/ForbesLindesay/umd) (Universal Module Definition), which enables library to be exported to browser, CommonJS,
 
-
+<!-- 
 Build
 =====
 
@@ -40,6 +40,6 @@ Build
 
     This places a minified js file in `./dist/` folder.
 
-    The associated distributable source map file(s) is/are generated.
+    The associated distributable source map file(s) is/are generated. -->
 
 [//]: # (comment)
