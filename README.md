@@ -18,7 +18,7 @@ Clone repo or download ZIP.
 Usage
 =====
 
-Open file gameFin.html
+Open file gameFin.html.
 Click on Start button and use <kbd><-</kbd> and <kbd>-></kbd> keys to interact & enjoy!
 
 
