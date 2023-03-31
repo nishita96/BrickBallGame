@@ -19,7 +19,7 @@ Usage
 =====
 
 Open file gameFin.html
-Click on Start button and use &#8592; and -> keys to interact & enjoy!
+Click on Start button and use <kbd><-</kbd> and <kbd>-></kbd> keys to interact & enjoy!
 
 
 
