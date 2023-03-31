@@ -1,7 +1,15 @@
-javascript-seed-project
+<!-- javascript-seed-project -->
+Brick Breaker Game 
 =========================
 
+Done as part of an assignment given to me at TechPrimeLabs Ltd while working as a Software Developer Intern.
 
+Implemented the brick breaker game by modeling basic collision behaviour between a ball, a set of bricks and the surrounding wall. Keyboard based interaction was implemented for all of the levels.
+
+Developed using HTML5 Canvas and TypeScript. 
+
+
+<!-- 
 With this seed, you should be able to:
 
 1. Develop in JavaScript
@@ -32,7 +40,7 @@ Preset:
 * `output.library` - name of exported library (e.g. `MyAwesomeProject()`)
 * `output.libraryTarget` - exporting library to global scope. In this case, preset to [`umd`](https://github.com/ForbesLindesay/umd) (Universal Module Definition), which enables library to be exported to browser, CommonJS,
 
-<!-- 
+
 Build
 =====
 
