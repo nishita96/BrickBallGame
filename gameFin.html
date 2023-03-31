@@ -36,7 +36,7 @@
         context.fillRect(0,0,460,620);
     }
 
-    //PADDLE (USING KEYBOARD)
+    //PADDLE (USING KEYS <- and ->)
     var px = (460-120)/2;
     var py = 600;
     var pw = 120;
@@ -247,6 +247,7 @@
         alert("GAME OVER!");
         document.location.reload();
     }
+
     function gameWin() {
         alert("CONGRATS! YOU WIN!");
         document.location.reload();
@@ -255,10 +256,11 @@
     //SCORE BOARD
     function scores() {
         //Score
-        context.fillStyle='#ffffff';
+        context.fillStyle='#000000';
         context.font = '30px Arial';
-        context.fillText('SCORE: '+ score, 5,25);
+        context.fillText('SCORE: '+ score, 155,25);
     }
+
     background();
 
     //CALL ALL
@@ -277,6 +279,7 @@
             paddleDraw();
             scores();
         } ,7);
+
         document.getElementById("startBtn").style.display = 'none';
     }
 
