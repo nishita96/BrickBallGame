@@ -9,6 +9,24 @@ Implemented the brick breaker game by modeling basic collision behaviour between
 Developed using HTML5 Canvas and TypeScript. 
 
 
+Install
+=======
+
+Clone repo or download ZIP.
+
+
+Usage
+=====
+
+Open file gameFin.html
+Click on Start button and use <- and -> keys to interact & enjoy!
+
+
+
+
+
+
+
 <!-- 
 With this seed, you should be able to:
 
